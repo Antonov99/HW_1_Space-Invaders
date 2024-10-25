@@ -10,16 +10,24 @@ namespace ShootEmUp
     public class PlayerAttackController:IInitializable,IDisposable
     {
         private readonly InputSystem _inputSystem;
-        private GameObject _character;
+        private readonly GameObject _character;
+        private readonly BulletSystem _bulletSystem;
+        private readonly BulletConfig _bulletConfig;
         private WeaponComponent _weapon;
         
-        public PlayerAttackController(InputSystem inputSystem, PlayerService playerService)
+        public PlayerAttackController(
+            InputSystem inputSystem, 
+            PlayerService playerService, 
+            BulletSystem bulletSystem, 
+            BulletConfig bulletConfig)
         {
             _inputSystem = inputSystem;
             _character = playerService.Player;
+            _bulletSystem = bulletSystem;
+            _bulletConfig = bulletConfig;
         }
 
-        public void Initialize()
+        void IInitializable.Initialize()
         {
             _inputSystem.OnFire += OnFire;
             _weapon = _character.GetComponent<WeaponComponent>();
@@ -27,10 +35,18 @@ namespace ShootEmUp
 
         private void OnFire()
         {
-            
+            _bulletSystem.SpawnBullet(new BulletArgs
+            {
+                position = _weapon.Position,
+                velocity = _weapon.Rotation * Vector3.up * _bulletConfig.speed,
+                color = _bulletConfig.color,
+                physicsLayer = (int)_bulletConfig.physicsLayer,
+                damage = _bulletConfig.damage,
+                isPlayer = true
+            });
         }
 
-        public void Dispose()
+        void IDisposable.Dispose()
         {
             _inputSystem.OnFire -= OnFire;
         }

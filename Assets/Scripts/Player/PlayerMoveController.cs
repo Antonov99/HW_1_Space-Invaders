@@ -12,11 +12,13 @@ namespace ShootEmUp
         private readonly GameObject _character;
         private MoveComponent _moveComponent;
         private readonly InputSystem _inputSystem;
+        private readonly LevelBounds _levelBounds;
 
-        public PlayerMoveController(PlayerService playerService, InputSystem inputSystem)
+        public PlayerMoveController(PlayerService playerService, InputSystem inputSystem, LevelBounds levelBounds)
         {
             _character = playerService.Player;
             _inputSystem = inputSystem;
+            _levelBounds = levelBounds;
         }
         
         void IInitializable.Initialize()
@@ -27,10 +29,11 @@ namespace ShootEmUp
 
         private void OnMove(Vector2 direction)
         {
+            if(!_levelBounds.InBounds(_character.transform.position)) _moveComponent.OnMove(-direction);;
             _moveComponent.OnMove(direction);
         }
 
-        public void Dispose()
+        void IDisposable.Dispose()
         {
             _inputSystem.OnMove -= OnMove;
         }

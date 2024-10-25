@@ -1,15 +1,16 @@
 using System;
+using Components;
 using UnityEngine;
 
 namespace ShootEmUp
 {
     public sealed class Bullet : MonoBehaviour
     {
-        public event Action<Bullet, Collision2D> OnCollisionEntered;
+        public event Action<Bullet> OnCollisionEntered;
 
         [NonSerialized]
         public bool isPlayer;
-        
+
         [NonSerialized]
         public int damage;
 
@@ -21,7 +22,10 @@ namespace ShootEmUp
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            this.OnCollisionEntered?.Invoke(this, collision);
+            OnCollisionEntered?.Invoke(this);
+            if (!collision.gameObject.TryGetComponent(out TeamComponent teamComponent)) return;
+            if(teamComponent.IsPlayer==isPlayer) return;
+            collision.gameObject.GetComponent<HealthComponent>().TakeDamage(damage);
         }
     }
 }

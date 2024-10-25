@@ -17,6 +17,8 @@ GameObject:
   - component: {fileID: 726604160483200235}
   - component: {fileID: 7185415485961041402}
   - component: {fileID: -5318840226901673605}
+  - component: {fileID: 7351544416384008727}
+  - component: {fileID: 3965134628025573623}
   m_Layer: 11
   m_Name: Enemy
   m_TagString: Untagged
@@ -166,12 +168,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e09a324f54d94d6e84681731f36566c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isPlayer: 0
-  firePoint: {fileID: 3195880656587174614}
-  health: 3
-  _rigidbody: {fileID: 659620479434099170}
-  speed: 3
-  countdown: 1
+  attackAgent: {fileID: 3965134628025573623}
 --- !u!114 &-4503913970785535149
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,7 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1750b268eefd4bb3acf9f43f6b76a333, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 3
+  health: 1
 --- !u!114 &726604160483200235
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -224,6 +221,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d1cae36ea2147e7a3d720822dc70086, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  firePoint: {fileID: 3195880656587174614}
+--- !u!114 &7351544416384008727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 559606060570185700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b42ca38bf15c48e4b35b8c42b12d7365, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveComponent: {fileID: 7185415485961041402}
+--- !u!114 &3965134628025573623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 559606060570185700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf35f607aedd4ef39800b32b52844aa6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponComponent: {fileID: -5318840226901673605}
+  moveAgent: {fileID: 7351544416384008727}
+  target: {fileID: 0}
+  countdown: 2
 --- !u!1 &2239154907127902911
 GameObject:
   m_ObjectHideFlags: 0
