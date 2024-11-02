@@ -270,28 +270,32 @@ namespace Inventories
 
         public bool FindFreePosition(in Vector2Int size, out Vector2Int freePosition)
         {
-            freePosition = default;       
+            freePosition = default;
             if (size.x <= 0 || size.y <= 0) throw new ArgumentException();
-            for (int x = 0; x <= Width - size.x; x++)
+
+            for (int y = 0; y <= Height - size.y; y++) 
             {
-                for (int y = 0; y <= Height - size.y; y++)
+                for (int x = 0; x <= Width - size.x; x++)
                 {
                     bool free = true;
                     for (int i = x; i < x + size.x; i++)
                     {
                         for (int j = y; j < y + size.y; j++)
                         {
-                            if (cells[i, j] == null) continue;
-                            free = false;
-                            break;
+                            if (cells[i, j] != null)
+                            {
+                                free = false;
+                                break; 
+                            }
                         }
-
-                        if (!free) break;
+                        if (!free) break; 
                     }
 
-                    if (!free) continue;
-                    freePosition = new Vector2Int(x, y);
-                    return true;
+                    if (free)
+                    {
+                        freePosition = new Vector2Int(x, y);
+                        return true;
+                    }
                 }
             }
 
@@ -483,18 +487,105 @@ namespace Inventories
         /// </summary>
         public bool MoveItem(in Item item, in Vector2Int position)
         {
-            if (item is null) throw new NullReferenceException();
+            if (item is null) throw new ArgumentNullException();
             if (!Contains(item)) return false;
+            if (position.x > Width || position.y > Height || position.x <= 0 || position.y <= 0) return false;
 
+            if (!CanMoveItem(item, position)) return false;
+            if (!RemoveItem(item)) return false;
+            AddItem(item, position);
             
+            OnMoved?.Invoke(item,position);
+
+            return true;
+        }
+
+        private bool CanMoveItem(in Item item, in Vector2Int position)
+        {
+            if (item.Size.x <= 0 || item.Size.y <= 0) throw new ArgumentException();
+
+            Vector2Int itemSize = item.Size;
+
+            if (position.x + itemSize.x > Width ||
+                position.y + itemSize.y > Height ||
+                position.x < 0 || position.y < 0)
+            {
+                return false;
+            }
+
+            for (int x = position.x; x < position.x + itemSize.x; x++)
+            {
+                for (int y = position.y; y < itemSize.y + position.y; y++)
+                {
+                    if (cells[x, y] != null && !cells[x,y].Equals(item))
+                    {
+                        return false;
+                    }
+                }
+            }
+
             return true;
         }
 
         /// <summary>
         /// Reorganizes a inventory space so that the free area is uniform
         /// </summary>
-        public void ReorganizeSpace() =>
-            throw new NotImplementedException();
+        public void ReorganizeSpace()
+        {
+            var items = itemMap.ToList();
+            Clear();
+
+            items.Sort((a, b) => (b.Value.Count).CompareTo(a.Value.Count));
+
+
+            foreach (var itemPair in items)
+            {
+                var item = itemPair.Key;
+                var size = item.Size;
+
+                Vector2Int position;
+                if (FindLowestFreePosition(size, out position))
+                {
+                    AddItem(item, position);
+                }
+                else
+                {
+                    Debug.LogWarning($"Not enough space for item {item.Name}");
+                }
+
+            }
+        }
+
+        private bool FindLowestFreePosition(Vector2Int size, out Vector2Int freePosition)
+        {
+            freePosition = default;
+            for (int y = 0; y <= Height - size.y; y++)
+            {
+                for (int x = 0; x <= Width - size.x; x++)
+                {
+                    bool free = true;
+                    for (int i = x; i < x + size.x; i++)
+                    {
+                        for (int j = y; j < y + size.y; j++)
+                        {
+                            if (cells[i, j] != null)
+                            {
+                                free = false;
+                                break;
+                            }
+                        }
+                        if (!free) break;
+                    }
+                    if (free)
+                    {
+                        freePosition = new Vector2Int(x, y);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
 
         /// <summary>
         /// Copies inventory items to a specified matrix
@@ -506,13 +597,7 @@ namespace Inventories
                 throw new ArgumentException();
             }
 
-            for (int x = 0; x < Width; x++)
-            {
-                for (int y = 0; y < Height; y++)
-                {
-                    matrix[x, y] = cells[x, y];
-                }
-            }
+            Array.Copy(cells, matrix, cells.Length);
         }
 
         public IEnumerator<Item> GetEnumerator()
