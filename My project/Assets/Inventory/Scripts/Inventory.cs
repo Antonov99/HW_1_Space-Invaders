@@ -165,8 +165,8 @@ namespace Inventories
             }
 
             itemMap.Add(item, points);
-            OnAdded?.Invoke(item, position);
             Count++;
+            OnAdded?.Invoke(item, position);
 
             return true;
         }
@@ -191,8 +191,8 @@ namespace Inventories
             }
 
             itemMap.Add(item, points);
-            OnAdded?.Invoke(item, new Vector2Int(posX, posY));
             Count++;
+            OnAdded?.Invoke(item, new Vector2Int(posX, posY));
 
             return true;
         }
@@ -230,8 +230,8 @@ namespace Inventories
             }
 
             itemMap.Add(item, points);
-            OnAdded?.Invoke(item, freePosition);
             Count++;
+            OnAdded?.Invoke(item, freePosition);
             return true;
         }
 
@@ -260,7 +260,7 @@ namespace Inventories
                     }
 
                     if (!free) continue;
-                    freePosition = new Vector2Int(x, y);
+                    freePosition = new Vector2Int(y, x);
                     return true;
                 }
             }
