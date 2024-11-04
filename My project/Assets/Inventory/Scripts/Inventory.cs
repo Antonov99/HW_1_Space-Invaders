@@ -490,10 +490,26 @@ namespace Inventories
             if (item is null) throw new ArgumentNullException();
             if (!Contains(item)) return false;
             if (position.x > Width || position.y > Height || position.x <= 0 || position.y <= 0) return false;
-
             if (!CanMoveItem(item, position)) return false;
-            if (!RemoveItem(item)) return false;
-            AddItem(item, position);
+            var positions = itemMap[item];
+            foreach (var coordinates in positions)
+            {
+                cells[coordinates.x, coordinates.y] = null;
+            }
+            itemMap.Remove(item);
+
+            Vector2Int itemSize = item.Size;
+            List<Vector2Int> points = new List<Vector2Int>(itemSize.x * itemSize.y);
+
+            for (int x = position.x; x < position.x + itemSize.x; x++)
+            {
+                for (int y = position.y; y < itemSize.y + position.y; y++)
+                {
+                    cells[x, y] = item;
+                    points.Add(new Vector2Int(x, y));
+                }
+            }
+            itemMap.Add(item, points);
             
             OnMoved?.Invoke(item,position);
 
