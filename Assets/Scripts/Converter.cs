@@ -1,4 +1,5 @@
 using System;
+using System.Timers;
 
 namespace Homework
 {
@@ -26,6 +27,8 @@ namespace Homework
      */
     public sealed class Converter
     {
+        private Timer _timer;
+        
         public IArea LoadingArea { get; private set; }
         public IArea UnloadingArea { get; private set; }
         public int InCountToConvert { get; private set; }
@@ -99,43 +102,73 @@ namespace Homework
             return true;
         }
 
+        public bool CanConvert()
+        {
+            if (LoadingArea.CanRemoveResources(LoadingArea.TargetResource, InCountToConvert) &&
+                UnloadingArea.CanAddResources(UnloadingArea.TargetResource, OutCountAfterConvert))
+                return true;
+
+            return false;
+        }
+
         public void Convert()
         {
-            while (IsActive)
-            {
-                if (LoadingArea.CanRemoveResources(LoadingArea.TargetResource, InCountToConvert) &&
-                    UnloadingArea.CanAddResources(UnloadingArea.TargetResource, OutCountAfterConvert))
-                {
-                    LoadingArea.RemoveResources(LoadingArea.TargetResource, InCountToConvert);
-                    //timer
-                    if (!IsActive)
-                    {
-                        goto ReturnResources;
-                    }
+            if (!IsActive) return;
 
-                    UnloadingArea.AddResources(UnloadingArea.TargetResource, OutCountAfterConvert);
-                    OnConvert?.Invoke(UnloadingArea.TargetResource, OutCountAfterConvert);
-                }
-                else
-                {
-                    IsActive = false;
-                }
+            if (CanConvert())
+            {
+                LoadingArea.RemoveResources(LoadingArea.TargetResource, InCountToConvert);
+                UnloadingArea.AddResources(UnloadingArea.TargetResource, OutCountAfterConvert);
+                OnConvert?.Invoke(UnloadingArea.TargetResource, OutCountAfterConvert);
             }
-            ReturnResources:
+            else
+            {
+                IsActive = false;
+                StopTimer();
+                ReturnResources();
+            }
+        }
+
+        private void ReturnResources()
+        {
             LoadingArea.AddResources(LoadingArea.TargetResource, InCountToConvert);
         }
 
         public bool StartConvert()
         {
             if (IsActive) return false;
+
             IsActive = true;
-            Convert();
+            StartTimer();
             return true;
         }
 
         public void SetActive(bool value)
         {
             IsActive = value;
+            if (!value)
+            {
+                StopTimer();
+                ReturnResources();
+            }
+        }
+
+        private void StartTimer()
+        {
+            _timer = new Timer(TimeToConvert);
+            _timer.Elapsed += (sender, e) => Convert();
+            _timer.AutoReset = true;
+            _timer.Enabled = true; 
+        }
+
+        private void StopTimer()
+        {
+            if (_timer != null)
+            {
+                _timer.Stop();
+                _timer.Dispose();
+                _timer = null;
+            }
         }
     }
 }
