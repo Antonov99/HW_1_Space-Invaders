@@ -1,5 +1,6 @@
 using System;
 using System.Timers;
+using Codice.Client.Common;
 
 namespace Homework
 {
@@ -27,14 +28,16 @@ namespace Homework
      */
     public sealed class Converter
     {
-        private Timer _timer;
-        
         public IArea LoadingArea { get; private set; }
         public IArea UnloadingArea { get; private set; }
         public int InCountToConvert { get; private set; }
         public int OutCountAfterConvert { get; private set; }
         public float TimeToConvert { get; private set; }
         public bool IsActive { get; private set; }
+        public float CurrentTime { get; private set; }
+        public Resource ResourceToConvert { get; private set; }
+        public Resource ResourceAfterConvert { get; private set; }
+
 
         public event Action<Resource, int> OnPut;
         public event Action<Resource, int> OnTake;
@@ -45,7 +48,9 @@ namespace Homework
             IArea unloadingArea,
             int inCountToConvert,
             int outCountAfterConvert,
-            float timeToConvert)
+            float timeToConvert,
+            Resource resourceToConvert,
+            Resource resourceAfterConvert)
         {
             if (loadingArea is null || unloadingArea is null) throw new NullReferenceException();
             if (inCountToConvert <= 0 || outCountAfterConvert <= 0 || timeToConvert <= 0) throw new ArgumentException();
@@ -55,6 +60,8 @@ namespace Homework
             InCountToConvert = inCountToConvert;
             OutCountAfterConvert = outCountAfterConvert;
             TimeToConvert = timeToConvert;
+            ResourceToConvert = resourceToConvert;
+            ResourceAfterConvert = resourceAfterConvert;
         }
 
         public Converter(
@@ -63,7 +70,9 @@ namespace Homework
             int inCountToConvert,
             int outCountAfterConvert,
             float timeToConvert,
-            bool isActive) : this(loadingArea, unloadingArea, inCountToConvert, outCountAfterConvert, timeToConvert)
+            Resource resourceToConvert,
+            Resource resourceAfterConvert,
+            bool isActive) : this(loadingArea, unloadingArea, inCountToConvert, outCountAfterConvert, timeToConvert, resourceToConvert, resourceAfterConvert)
         {
             IsActive = isActive;
         }
@@ -72,7 +81,8 @@ namespace Homework
         {
             if (resource is null) throw new NullReferenceException();
             if (count <= 0) throw new ArgumentException();
-            if (!LoadingArea.CanAddResources(resource, count)) return false;
+            if (resource.Name != ResourceToConvert.Name) return false;
+            if (!LoadingArea.CanAddResources(count)) return false;
             return true;
         }
 
@@ -80,14 +90,14 @@ namespace Homework
         {
             if (resource is null) throw new NullReferenceException();
             if (count <= 0) throw new ArgumentException();
-            if (!UnloadingArea.CanRemoveResources(resource, count)) return false;
+            if (!UnloadingArea.CanRemoveResources(count)) return false;
             return true;
         }
 
         public bool PutResources(Resource resource, int count)
         {
             if (!CanPutResources(resource, count)) return false;
-            LoadingArea.AddResources(resource, count);
+            LoadingArea.AddResources(count);
 
             OnPut?.Invoke(resource, count);
             return true;
@@ -96,16 +106,47 @@ namespace Homework
         public bool TakeResources(Resource resource, int count)
         {
             if (!CanTakeResources(resource, count)) return false;
-            UnloadingArea.RemoveResources(resource, count);
+            UnloadingArea.RemoveResources(count);
 
             OnTake?.Invoke(resource, count);
             return true;
         }
 
+        public bool StartConvert()
+        {
+            if (IsActive) return false;
+
+            if (CanConvert())
+            {
+                LoadingArea.RemoveResources(InCountToConvert);
+                IsActive = true;
+                StartCooldownConverting();
+            }
+
+            return true;
+        }
+
+        private void StartCooldownConverting()
+        {
+            while (IsActive)
+            {
+                Tick(TimeToConvert);
+                if (CurrentTime >= TimeToConvert)
+                {
+                    Convert();
+                    CurrentTime = 0;
+                    if (CanConvert())
+                        LoadingArea.RemoveResources(InCountToConvert);
+                    else
+                        SetActive(false);
+                }
+            }
+        }
+
         public bool CanConvert()
         {
-            if (LoadingArea.CanRemoveResources(LoadingArea.TargetResource, InCountToConvert) &&
-                UnloadingArea.CanAddResources(UnloadingArea.TargetResource, OutCountAfterConvert))
+            if (LoadingArea.CanRemoveResources(InCountToConvert) &&
+                UnloadingArea.CanAddResources(OutCountAfterConvert))
                 return true;
 
             return false;
@@ -113,62 +154,37 @@ namespace Homework
 
         public void Convert()
         {
-            if (!IsActive) return;
-
-            if (CanConvert())
+            if (!IsActive)
             {
-                LoadingArea.RemoveResources(LoadingArea.TargetResource, InCountToConvert);
-                UnloadingArea.AddResources(UnloadingArea.TargetResource, OutCountAfterConvert);
-                OnConvert?.Invoke(UnloadingArea.TargetResource, OutCountAfterConvert);
+                ReturnResources();
+                return;
+            }
+
+            if (UnloadingArea.CanAddResources(OutCountAfterConvert))
+            {
+                UnloadingArea.AddResources(OutCountAfterConvert);
+                OnConvert?.Invoke(ResourceAfterConvert, OutCountAfterConvert);
             }
             else
             {
-                IsActive = false;
-                StopTimer();
                 ReturnResources();
+                SetActive(false);
             }
         }
 
         private void ReturnResources()
         {
-            LoadingArea.AddResources(LoadingArea.TargetResource, InCountToConvert);
-        }
-
-        public bool StartConvert()
-        {
-            if (IsActive) return false;
-
-            IsActive = true;
-            StartTimer();
-            return true;
+            LoadingArea.AddResources(InCountToConvert);
         }
 
         public void SetActive(bool value)
         {
             IsActive = value;
-            if (!value)
-            {
-                StopTimer();
-                ReturnResources();
-            }
         }
 
-        private void StartTimer()
+        public void Tick(float deltaTime)
         {
-            _timer = new Timer(TimeToConvert);
-            _timer.Elapsed += (sender, e) => Convert();
-            _timer.AutoReset = true;
-            _timer.Enabled = true; 
-        }
-
-        private void StopTimer()
-        {
-            if (_timer != null)
-            {
-                _timer.Stop();
-                _timer.Dispose();
-                _timer = null;
-            }
+            CurrentTime += deltaTime;
         }
     }
 }
