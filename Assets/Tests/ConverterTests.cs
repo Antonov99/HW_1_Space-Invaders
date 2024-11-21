@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace Homework
 {
@@ -22,10 +23,10 @@ namespace Homework
             ConverterArea unloadingArea = new ConverterArea(5);
 
             //Act:
-            var converter = new Converter(loadingArea, unloadingArea, inCountToConvert, outCountAfterConvert,
+            Converter<string> converter = new Converter<string>(loadingArea, unloadingArea, inCountToConvert, outCountAfterConvert,
                 timeToConvert,
-                new Resource(name: "Wood"),
-                new Resource(name: "Lambert"));
+                "Wood",
+                "Lambert");
 
             //Assert:
             Assert.AreEqual(loadingArea, converter.LoadingArea);
@@ -35,8 +36,10 @@ namespace Homework
             Assert.AreEqual(timeToConvert, converter.TimeToConvert);
         }
 
-        [Test]
-        public void WhenInvalidArgumentsThenException()
+        [TestCase(-4, 1, 1f)]
+        [TestCase(1, -2, 1f)]
+        [TestCase(1, 1, 0f)]
+        public void WhenInvalidArgumentsThenException(int inCount, int outCount, float time)
         {
             ConverterArea loadingArea = new ConverterArea(5);
             ConverterArea unloadingArea = new ConverterArea(5);
@@ -44,38 +47,44 @@ namespace Homework
             //Assert:
             Assert.Catch<ArgumentException>(() =>
             {
-                _ = new Converter(loadingArea, unloadingArea, -4, 1, 1f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert"));
+                _ = new Converter<string>(loadingArea, unloadingArea, inCount, outCount, time,
+                    "Wood",
+                    "Lambert");
             });
-            Assert.Catch<ArgumentException>(() =>
+
+            Assert.Catch<NullReferenceException>(() =>
             {
-                _ = new Converter(loadingArea, unloadingArea, 1, -2, 1f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert"));
-            });
-            Assert.Catch<ArgumentException>(() =>
-            {
-                _ = new Converter(loadingArea, unloadingArea, 1, 1, 0f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert"));
+                _ = new Converter<string>(null, unloadingArea, 1, 1, 0f,
+                    "Wood",
+                    "Lambert");
             });
             Assert.Catch<NullReferenceException>(() =>
             {
-                _ = new Converter(null, unloadingArea, 1, 1, 0f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert"));
+                _ = new Converter<string>(loadingArea, null, 1, 1, 0f,
+                    "Wood",
+                    "Lambert");
+            });
+        }
+
+        [Test]
+        public void WhenNullArgumentsThenException()
+        {
+            Assert.Catch<NullReferenceException>(() =>
+            {
+                _ = new Converter<string>(null, new ConverterArea(5), 1, 1, 0f,
+                    "Wood",
+                    "Lambert");
             });
             Assert.Catch<NullReferenceException>(() =>
             {
-                _ = new Converter(loadingArea, null, 1, 1, 0f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert"));
+                _ = new Converter<string>(new ConverterArea(5), null, 1, 1, 0f,
+                    "Wood",
+                    "Lambert");
             });
         }
 
         [TestCaseSource(nameof(CanPutResourcesCases))]
-        public bool CanPutResources(Converter converter, Resource resource, int count)
+        public bool CanPutResources(Converter<string> converter, string resource, int count)
         {
             return converter.CanPutResources(resource, count);
         }
@@ -83,32 +92,32 @@ namespace Homework
         private static IEnumerable<TestCaseData> CanPutResourcesCases()
         {
             yield return new TestCaseData(
-                new Converter(new ConverterArea(5), new ConverterArea(5), 2, 1, 1f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert")),
-                new Resource(name: "Wood"),
+                new Converter<string>(new ConverterArea(5), new ConverterArea(5), 2, 1, 1f,
+                    "Wood",
+                    "Lambert"),
+               "Wood",
                 3
             ).Returns(true).SetName("Empty area");
 
             yield return new TestCaseData(
-                new Converter(new ConverterArea(5), new ConverterArea(5), 2, 1, 1f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert")),
-                new Resource(name: "Wood"),
+                new Converter<string>(new ConverterArea(5), new ConverterArea(5), 2, 1, 1f,
+                    "Wood",
+                    "Lambert"),
+               "Wood",
                 6
-            ).Returns(false).SetName("Too much");
+            ).Returns(true).SetName("Too much");
 
             yield return new TestCaseData(
-                new Converter(new ConverterArea(5), new ConverterArea(5), 2, 1, 1f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert")),
-                new Resource(name: "Lambert"),
+                new Converter<string>(new ConverterArea(5), new ConverterArea(5), 2, 1, 1f,
+                    "Wood",
+                    "Lambert"),
+                 "Lambert",
                 2
             ).Returns(false).SetName("Not a target resource");
         }
 
         [TestCaseSource(nameof(CanTakeResourcesCases))]
-        public bool CanTakeResources(Converter converter, Resource resource, int count)
+        public bool CanTakeResources(Converter<string> converter, string resource, int count)
         {
             return converter.CanTakeResources(resource, count);
         }
@@ -116,51 +125,51 @@ namespace Homework
         private static IEnumerable<TestCaseData> CanTakeResourcesCases()
         {
             yield return new TestCaseData(
-                new Converter(new ConverterArea(5), new ConverterArea(5), 2, 1, 1f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert")),
-                new Resource(name: "Lambert"),
+                new Converter<string>(new ConverterArea(5), new ConverterArea(5), 2, 1, 1f,
+                    "Wood",
+                    "Lambert"),
+                "Lambert",
                 3
             ).Returns(false).SetName("Empty area");
 
             yield return new TestCaseData(
-                new Converter(new ConverterArea(5), new ConverterArea(5), 2, 1, 1f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert")),
-                new Resource(name: "Lambert"),
+                new Converter<string>(new ConverterArea(5), new ConverterArea(5), 2, 1, 1f,
+                    "Wood",
+                    "Lambert"),
+                "Lambert",
                 6
             ).Returns(false).SetName("Too much");
 
             yield return new TestCaseData(
-                new Converter(new ConverterArea(5), new ConverterArea(5, 5), 2, 1, 1f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert")),
-                new Resource(name: "Lambert"),
+                new Converter<string>(new ConverterArea(5), new ConverterArea(5, 5), 2, 1, 1f,
+                   "Wood",
+                    "Lambert"),
+               "Lambert",
                 5
             ).Returns(true).SetName("Is full");
 
             yield return new TestCaseData(
-                new Converter(new ConverterArea(5), new ConverterArea(5, 3), 2, 1, 1f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert")),
-                new Resource(name: "Lambert"),
+                new Converter<string>(new ConverterArea(5), new ConverterArea(5, 3), 2, 1, 1f,
+                     "Wood",
+                    "Lambert"),
+                "Lambert",
                 2
             ).Returns(true).SetName("Success");
 
             yield return new TestCaseData(
-                new Converter(new ConverterArea(5), new ConverterArea(5), 2, 1, 1f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert")),
-                new Resource(name: "Wood"),
+                new Converter<string>(new ConverterArea(5), new ConverterArea(5), 2, 1, 1f,
+                    "Wood",
+                    "Lambert"),
+                "Wood",
                 2
             ).Returns(false).SetName("Not a target resource");
         }
 
         [TestCaseSource(nameof(PutResourcesSuccessfulCases))]
-        public void PutResourcesSuccessful(Converter converter, Resource resource, int count)
+        public void PutResourcesSuccessful(Converter<string> converter, string resource, int count)
         {
             //Arrange:
-            Resource puttedResource = null;
+            string puttedResource = null;
             int puttedCount = 0;
 
             converter.OnPut += (i, p) =>
@@ -181,35 +190,35 @@ namespace Homework
         private static IEnumerable<TestCaseData> PutResourcesSuccessfulCases()
         {
             yield return new TestCaseData(
-                new Converter(new ConverterArea(5), new ConverterArea(5, 3), 2, 1, 1f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert")),
-                new Resource(name: "Wood"),
+                new Converter<string>(new ConverterArea(5), new ConverterArea(5, 3), 2, 1, 1f,
+                     "Wood",
+                   "Lambert"),
+                "Wood",
                 3
             ).SetName("Empty area");
 
             yield return new TestCaseData(
-                new Converter(new ConverterArea(5, 4), new ConverterArea(5, 3), 2, 1, 1f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert")),
-                new Resource(name: "Wood"),
+                new Converter<string>(new ConverterArea(5, 4), new ConverterArea(5, 3), 2, 1, 1f,
+                     "Wood",
+                     "Lambert"),
+                "Wood",
                 1
             ).SetName("Make full 4/5");
 
             yield return new TestCaseData(
-                new Converter(new ConverterArea(100, 50), new ConverterArea(5, 3), 2, 1, 1f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert")),
-                new Resource(name: "Wood"),
+                new Converter<string>(new ConverterArea(100, 50), new ConverterArea(5, 3), 2, 1, 1f,
+                    "Wood",
+                     "Lambert"),
+                "Wood",
                 50
             ).SetName("Make full 50/100");
         }
 
         [TestCaseSource(nameof(TakeResourcesSuccessfulCases))]
-        public void TakeResourcesSuccessful(Converter converter, Resource resource, int count)
+        public void TakeResourcesSuccessful(Converter<string> converter, string resource, int count)
         {
             //Arrange:
-            Resource takenResource = null;
+            string takenResource = null;
             int takenCount = 0;
 
             converter.OnTake += (i, p) =>
@@ -230,35 +239,36 @@ namespace Homework
         private static IEnumerable<TestCaseData> TakeResourcesSuccessfulCases()
         {
             yield return new TestCaseData(
-                new Converter(new ConverterArea(5), new ConverterArea(5, 3), 2, 1, 1f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert")),
-                new Resource(name: "Lambert"),
+                new Converter<string>(new ConverterArea(5), new ConverterArea(5, 3), 2, 1, 1f,
+                    "Wood",
+                    "Lambert"),
+               "Lambert",
                 3
             ).SetName("Take all");
 
             yield return new TestCaseData(
-                new Converter(new ConverterArea(5, 4), new ConverterArea(5, 3), 2, 1, 1f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert")),
-                new Resource(name: "Lambert"),
+                new Converter<string>(new ConverterArea(5, 4), new ConverterArea(5, 3), 2, 1, 1f,
+                    "Wood",
+                    "Lambert"),
+                "Lambert",
                 1
             ).SetName("Take one");
 
             yield return new TestCaseData(
-                new Converter(new ConverterArea(100, 50), new ConverterArea(100, 100), 2, 1, 1f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert")),
-                new Resource(name: "Lambert"),
+                new Converter<string>(new ConverterArea(100, 50), new ConverterArea(100, 100), 2, 1, 1f,
+                    "Wood",
+                    "Lambert"),
+                "Lambert",
                 50
             ).SetName("Take half 50/100");
         }
 
         [TestCaseSource(nameof(ConvertResourcesSuccessfulCases))]
-        public void ConvertResourcesSuccessful(Converter converter, Resource resource, int count, int loadingAreaCount, int unloadingAreaCount)
+        public void ConvertResourcesSuccessful(Converter<string> converter, Resource resource, int count, int loadingAreaCount,
+            int unloadingAreaCount, bool successfull)
         {
             //Arrange:
-            List<Resource> convertedResources = new();
+            List<string> convertedResources = new();
             int convertedCount = 0;
 
             converter.OnConvert += (i, p) =>
@@ -269,14 +279,20 @@ namespace Homework
 
             //Act:
             bool success = converter.StartConvert();
-
-            //Assert:
-            foreach (var convertedResource in convertedResources)
+            for (int i = 0; i < count * 2; i++)
             {
-                Assert.AreEqual(resource.Name, convertedResource.Name);
+                converter.Update(1f);
+                Debug.Log(converter.LoadingArea.CurrentCount);
+                Debug.Log(converter.UnloadingArea.CurrentCount);
             }
 
-            Assert.IsTrue(success);
+            //Assert:
+            foreach (string convertedResource in convertedResources)
+            {
+                Assert.AreEqual(resource.Name, convertedResource);
+            }
+
+            Assert.AreEqual(success, successfull);
             Assert.AreEqual(count, convertedCount);
             Assert.AreEqual(loadingAreaCount, converter.LoadingArea.CurrentCount);
             Assert.AreEqual(unloadingAreaCount, converter.UnloadingArea.CurrentCount);
@@ -285,193 +301,48 @@ namespace Homework
         private static IEnumerable<TestCaseData> ConvertResourcesSuccessfulCases()
         {
             yield return new TestCaseData(
-                new Converter(new ConverterArea(5, 5), new ConverterArea(5, 0), 2, 1, 1f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert")),
+                new Converter<string>(new ConverterArea(5, 5), new ConverterArea(5, 0), 2, 1, 1f,
+                    "Wood",
+                    "Lambert"),
                 new Resource(name: "Lambert"),
                 2,
                 1,
-                2
+                2,
+                true
             ).SetName("Was empty, 5->2, final 2/5");
 
             yield return new TestCaseData(
-                new Converter(new ConverterArea(5, 1), new ConverterArea(5, 0), 2, 1, 1f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert")),
+                new Converter<string>(new ConverterArea(5, 1), new ConverterArea(5, 0), 2, 1, 1f,
+                    "Wood",
+                    "Lambert"),
                 new Resource(name: "Lambert"),
                 0,
                 1,
-                0
+                0,
+                false
             ).SetName("Was empty, 1->0");
 
             yield return new TestCaseData(
-                new Converter(new ConverterArea(100, 50), new ConverterArea(10, 10), 2, 1, 1f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert")),
+                new Converter<string>(new ConverterArea(100, 50), new ConverterArea(10, 10), 2, 1, 1f,
+                    "Wood",
+                    "Lambert"),
                 new Resource(name: "Lambert"),
                 0,
                 50,
-                10
+                10,
+                false
             ).SetName("Was full, 50->0");
 
             yield return new TestCaseData(
-                new Converter(new ConverterArea(100, 50), new ConverterArea(10, 5), 2, 1, 1f,
-                    new Resource(name: "Wood"),
-                    new Resource(name: "Lambert")),
+                new Converter<string>(new ConverterArea(100, 50), new ConverterArea(10, 5), 2, 1, 1f,
+                    "Wood",
+                    "Lambert"),
                 new Resource(name: "Lambert"),
                 5,
                 40,
-                10
+                10,
+                true
             ).SetName("Was not full, 50->5");
-        }
-    }
-
-    public class AreaTests
-    {
-        [TestCase(10, 0)]
-        [TestCase(5, 5)]
-        [TestCase(1, 10)]
-        public void Instantiate(
-            int capacity,
-            int currentCount
-        )
-        {
-            //Act:
-            ConverterArea area = new(capacity, currentCount);
-
-            //Assert:
-            Assert.AreEqual(capacity, area.Capacity);
-            Assert.AreEqual(currentCount, area.CurrentCount);
-        }
-
-        [Test]
-        public void WhenInvalidArgumentsThenException()
-        {
-            //Assert:
-            Assert.Catch<ArgumentException>(() => { _ = new ConverterArea(0, 5); });
-            Assert.Catch<ArgumentException>(() => { _ = new ConverterArea(5, -3); });
-            Assert.Catch<ArgumentException>(() => { _ = new ConverterArea(-3, 5); });
-            Assert.Catch<ArgumentException>(() => { _ = new ConverterArea(3, -5); });
-        }
-
-        [TestCaseSource(nameof(CanAddResourcesCases))]
-        public bool CanAddResources(ConverterArea area, int count)
-        {
-            return area.CanAddResources(count);
-        }
-
-        private static IEnumerable<TestCaseData> CanAddResourcesCases()
-        {
-            yield return new TestCaseData(
-                new ConverterArea(capacity: 5, currentCount: 0),
-                3
-            ).Returns(true).SetName("Empty area");
-
-            yield return new TestCaseData(
-                new ConverterArea(capacity: 1, currentCount: 0),
-                2
-            ).Returns(false).SetName("Too much");
-
-            yield return new TestCaseData(
-                new ConverterArea(capacity: 5, currentCount: 5),
-                1
-            ).Returns(false).SetName("Is full");
-        }
-
-        [TestCaseSource(nameof(CanRemoveResourcesCases))]
-        public bool CanRemoveResources(ConverterArea area, int count)
-        {
-            return area.CanRemoveResources(count);
-        }
-
-        private static IEnumerable<TestCaseData> CanRemoveResourcesCases()
-        {
-            yield return new TestCaseData(
-                new ConverterArea(capacity: 5, currentCount: 0),
-                3
-            ).Returns(false).SetName("Empty area");
-
-            yield return new TestCaseData(
-                new ConverterArea(capacity: 2, currentCount: 2),
-                3
-            ).Returns(false).SetName("Too much");
-
-            yield return new TestCaseData(
-                new ConverterArea(capacity: 5, currentCount: 5),
-                5
-            ).Returns(true).SetName("Is full");
-        }
-
-        [TestCaseSource(nameof(AddResourcesSuccessfulCases))]
-        public void AddResourcesSuccessful(ConverterArea area, int count)
-        {
-            //Arrange:
-            int addedCount = 0;
-            int previousCount = area.CurrentCount;
-
-            area.OnAdded += (p) => { addedCount = p; };
-
-            //Act:
-            bool success = area.AddResources(count);
-
-            //Assert:
-            Assert.IsTrue(success);
-            Assert.AreEqual(previousCount + count, area.CurrentCount);
-            Assert.AreEqual(addedCount, count);
-        }
-
-        private static IEnumerable<TestCaseData> AddResourcesSuccessfulCases()
-        {
-            yield return new TestCaseData(
-                new ConverterArea(capacity: 5, currentCount: 0),
-                3
-            ).SetName("Empty area");
-
-            yield return new TestCaseData(
-                new ConverterArea(capacity: 5, currentCount: 4),
-                1
-            ).SetName("Make full 4/5");
-
-            yield return new TestCaseData(
-                new ConverterArea(capacity: 100, currentCount: 50),
-                50
-            ).SetName("Make full 50/100");
-        }
-
-        [TestCaseSource(nameof(RemoveResourcesSuccessfulCases))]
-        public void RemoveResourcesSuccessful(ConverterArea area, int count)
-        {
-            //Arrange:
-            int removedCount = 0;
-            int previousCount = area.CurrentCount;
-
-            area.OnRemoved += (p) => { removedCount = p; };
-
-            //Act:
-            bool success = area.RemoveResources(count);
-
-            //Assert:
-            Assert.IsTrue(success);
-            Assert.AreEqual(previousCount - count, area.CurrentCount);
-            Assert.AreEqual(removedCount, count);
-        }
-
-        private static IEnumerable<TestCaseData> RemoveResourcesSuccessfulCases()
-        {
-            yield return new TestCaseData(
-                new ConverterArea(capacity: 5, currentCount: 5),
-                5
-            ).SetName("Make full empty 5->0");
-
-            yield return new TestCaseData(
-                new ConverterArea(capacity: 50, currentCount: 35),
-                35
-            ).SetName("Make not full empty 35->0");
-
-            yield return new TestCaseData(
-                new ConverterArea(capacity: 5, currentCount: 3),
-                2
-            ).SetName("Take some 3->1");
         }
     }
 }

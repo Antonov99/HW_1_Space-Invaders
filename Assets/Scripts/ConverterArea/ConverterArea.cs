@@ -20,7 +20,7 @@ namespace Homework
             CurrentCount = currentCount;
         }
 
-        public int Capacity { get; private set; }
+        public int Capacity { get; }
         public int CurrentCount { get; private set; }
         public int FreePlaces => Capacity - CurrentCount;
 
@@ -28,6 +28,8 @@ namespace Homework
         public bool AddResources(int count)
         {
             if (!CanAddResources(count)) return false;
+            if (count > FreePlaces)
+                count = FreePlaces;
             CurrentCount += count;
 
             OnAdded?.Invoke(count);
@@ -37,7 +39,6 @@ namespace Homework
         public bool CanAddResources(int count)
         {
             if (FreePlaces <= 0) return false;
-            if (count > FreePlaces) return false;
 
             return true;
         }
