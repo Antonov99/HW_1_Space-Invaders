@@ -25,11 +25,21 @@ namespace Homework
         public int FreePlaces => Capacity - CurrentCount;
 
 
-        public bool AddResources(int count)
+        public bool AddResources(int count, out int change)
         {
-            if (!CanAddResources(count)) return false;
+            change = 0;
+            if (!CanAddResources(count))
+            {
+                change = count;
+                return false;
+            }
+
             if (count > FreePlaces)
+            {
+                change = count - FreePlaces;
                 count = FreePlaces;
+            }
+
             CurrentCount += count;
 
             OnAdded?.Invoke(count);

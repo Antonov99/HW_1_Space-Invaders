@@ -90,10 +90,11 @@ namespace Homework
             area.OnAdded += (p) => { addedCount = p; };
 
             //Act:
-            bool success = area.AddResources(count);
+            bool success = area.AddResources(count, out int change);
 
             //Assert:
             Assert.IsTrue(success);
+            Assert.AreEqual(change, 0);
             Assert.AreEqual(previousCount + count, area.CurrentCount);
             Assert.AreEqual(addedCount, count);
         }
@@ -114,6 +115,46 @@ namespace Homework
                 new ConverterArea(capacity: 100, currentCount: 50),
                 50
             ).SetName("Make full 50/100");
+        }
+        
+        [TestCaseSource(nameof(AddResourcesWithChangeCases))]
+        public void AddResourcesWithChange(ConverterArea area, int count, int expectedChange)
+        {
+            //Arrange:
+            int addedCount = 0;
+            int previousCount = area.CurrentCount;
+
+            area.OnAdded += (p) => { addedCount = p; };
+
+            //Act:
+            bool success = area.AddResources(count, out int change);
+
+            //Assert:
+            Assert.IsTrue(success);
+            Assert.AreEqual(expectedChange, change);
+            Assert.AreEqual(previousCount + (count-change), area.CurrentCount);
+            Assert.AreEqual(addedCount, count-change);
+        }
+
+        private static IEnumerable<TestCaseData> AddResourcesWithChangeCases()
+        {
+            yield return new TestCaseData(
+                new ConverterArea(capacity: 5, currentCount: 0),
+                60,
+                55
+            ).SetName("Empty area 0/5, change=55");
+
+            yield return new TestCaseData(
+                new ConverterArea(capacity: 5, currentCount: 4),
+                5,
+                4
+            ).SetName("Make full 4/5, change=4");
+
+            yield return new TestCaseData(
+                new ConverterArea(capacity: 100, currentCount: 50),
+                50,
+                0
+            ).SetName("Make full 50/100, change=0");
         }
 
         [TestCaseSource(nameof(RemoveResourcesSuccessfulCases))]

@@ -97,7 +97,7 @@ namespace Homework
         public bool PutResources(TResource resource, int count)
         {
             if (!CanPutResources(resource, count)) return false;
-            LoadingArea.AddResources(count);
+            LoadingArea.AddResources(count, out int change);
 
             OnPut?.Invoke(resource, count);
             return true;
@@ -164,7 +164,7 @@ namespace Homework
         {
             if (UnloadingArea.CanAddResources(OutCountAfterConvert))
             {
-                UnloadingArea.AddResources(OutCountAfterConvert);
+                UnloadingArea.AddResources(OutCountAfterConvert, out int change);
                 OnConvert?.Invoke(ResourceAfterConvert, OutCountAfterConvert);
             }
             else
@@ -175,7 +175,7 @@ namespace Homework
 
         private void ReturnResources()
         {
-            LoadingArea.AddResources(InCountToConvert);
+            LoadingArea.AddResources(InCountToConvert, out int change);
             SetActive(false);
             CurrentTime = 0;
         }
