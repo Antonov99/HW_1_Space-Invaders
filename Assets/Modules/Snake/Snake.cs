@@ -53,7 +53,7 @@ namespace Modules
         private void Awake()
         {
             _currentBones.AddRange(_initialBones);
-            this.SetMoveDirection(_currentDirection);
+            SetMoveDirection(_currentDirection);
         }
 
         private void FixedUpdate()
@@ -64,13 +64,13 @@ namespace Modules
             if (_movementTick < speedRate)
                 return;
 
-            this.MoveStep();
+            MoveStep();
             _movementTick -= speedRate;
 
-            if (this.CheckSelfCollided())
+            if (CheckSelfCollided())
             {
-                this.OnSelfCollided?.Invoke();
-                this.enabled = false;
+                OnSelfCollided?.Invoke();
+                enabled = false;
             }
         }
 
@@ -82,7 +82,7 @@ namespace Modules
 
         public void SetActive(bool active)
         {
-            this.enabled = active;
+            enabled = active;
         }
 
         [Button, HideInEditorMode]
@@ -94,7 +94,7 @@ namespace Modules
             if (_currentDirection == direction)
                 return;
 
-            this.SetMoveDirection(direction);
+            SetMoveDirection(direction);
             _currentDirection = direction;
         }
 
@@ -147,7 +147,7 @@ namespace Modules
             }
 
             Vector3 newPosition = head.position;
-            this.OnMoved?.Invoke(new Vector2Int((int) newPosition.x, (int) newPosition.y));
+            OnMoved?.Invoke(new Vector2Int((int) newPosition.x, (int) newPosition.y));
         }
 
         private bool CheckSelfCollided()

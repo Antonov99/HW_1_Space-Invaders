@@ -27,7 +27,7 @@ namespace Modules
             }
 
             _current++;
-            this.OnStateChanged?.Invoke();
+            OnStateChanged?.Invoke();
             
             difficulty = _current;
             return true;
