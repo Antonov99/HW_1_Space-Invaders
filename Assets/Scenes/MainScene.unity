@@ -1070,7 +1070,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1563079521}
   - component: {fileID: 1563079520}
-  - component: {fileID: 1563079519}
+  - component: {fileID: 1563079522}
   m_Layer: 0
   m_Name: '[DI]'
   m_TagString: Untagged
@@ -1078,22 +1078,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1563079519
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1563079518}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96058c921ea145a8a08d58e526004a5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _snake: {fileID: 603291647516529739}
-  _worldBounds: {fileID: 1431199845}
-  _gameUI: {fileID: 1764093826}
-  _coinPrefab: {fileID: 1221131666036007499, guid: f37c023e6b8b06149a4215320dd7e482, type: 3}
 --- !u!114 &1563079520
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1108,7 +1092,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scriptableObjectInstallers: []
   _monoInstallers:
-  - {fileID: 1563079519}
+  - {fileID: 1563079522}
   _installerPrefabs: []
   _autoRun: 1
   OnPreInstall:
@@ -1141,6 +1125,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1563079522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1563079518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea18c7afe46d46c790b18af452433c8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _snake: {fileID: 603291647516529739}
+  _coinPrefab: {fileID: 1221131666036007499, guid: f37c023e6b8b06149a4215320dd7e482, type: 3}
+  _difficulty: 3
+  _gameUI: {fileID: 1764093826}
+  _worldBounds: {fileID: 1431199845}
 --- !u!1 &1587245287
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,7 +12,7 @@ namespace DifficultySystem
     [UsedImplicitly]
     public class DifficultyController : IInitializable, IDisposable
     {
-        public event Action OnWin; 
+        public event Action OnWin;
         private readonly HashSet<Coin> _activeCoins = new();
 
         private readonly CoinSystem _coinSystem;
@@ -32,7 +32,6 @@ namespace DifficultySystem
             _coinSystem.OnSpawn += OnSpawn;
 
             _difficulty.Next(out int difficulty);
-            Debug.Log(difficulty);
         }
 
         private void OnSpawn(Coin coin)
@@ -43,14 +42,17 @@ namespace DifficultySystem
         private void OnCollect(Coin coin)
         {
             _activeCoins.Remove(coin);
+            _playerService.Player.Expand(coin.Bones);
             if (_activeCoins.Count > 0) return;
             if (_difficulty.Next(out int difficulty))
             {
                 _playerService.Player.SetSpeed(difficulty);
-                _playerService.Player.Expand(coin.Bones);
             }
             else
+            {
                 OnWin?.Invoke();
+                _playerService.Player.SetActive(false);
+            }
         }
 
         void IDisposable.Dispose()

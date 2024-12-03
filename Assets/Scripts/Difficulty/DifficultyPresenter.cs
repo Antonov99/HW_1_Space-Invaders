@@ -7,7 +7,7 @@ using Zenject;
 namespace DifficultySystem
 {
     [UsedImplicitly]
-    public class DifficultyPresenter:IInitializable,IDisposable
+    public class DifficultyPresenter : IInitializable, IDisposable
     {
         private readonly IGameUI _gameUI;
         private readonly IDifficulty _difficulty;

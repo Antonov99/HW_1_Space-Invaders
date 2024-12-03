@@ -5,7 +5,7 @@ using Zenject;
 namespace ScoreSystem
 {
     [UsedImplicitly]
-    public class ScoreInstaller:Installer<ScoreInstaller>
+    public class ScoreInstaller : Installer<ScoreInstaller>
     {
         public override void InstallBindings()
         {

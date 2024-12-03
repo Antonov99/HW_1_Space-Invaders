@@ -7,7 +7,7 @@ using Zenject;
 namespace ScoreSystem
 {
     [UsedImplicitly]
-    public class ScorePresenter:IInitializable,IDisposable
+    public class ScorePresenter : IInitializable, IDisposable
     {
         private readonly IGameUI _gameUI;
         private readonly IScore _score;

@@ -20,7 +20,7 @@ namespace Coins
             var coin = _coinPool.Spawn();
             coin.Position = position;
             coin.Generate();
-            
+
             return coin;
         }
 

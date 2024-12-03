@@ -49,7 +49,7 @@ namespace Coins
                 _coinSpawner.RemoveCoin(coin);
                 _activeCoins.Remove(coin);
                 _score.Add(coin.Score);
- 
+
                 OnCollect?.Invoke(coin);
                 return;
             }

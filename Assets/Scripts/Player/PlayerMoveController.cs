@@ -7,7 +7,7 @@ using Zenject;
 namespace Player
 {
     [UsedImplicitly]
-    public sealed class PlayerMoveController : IInitializable,IDisposable
+    public sealed class PlayerMoveController : IInitializable, IDisposable
     {
         private readonly ISnake _player;
         private readonly InputAdapter _inputAdapter;
@@ -17,7 +17,7 @@ namespace Player
             _player = playerService.Player;
             _inputAdapter = inputAdapter;
         }
-        
+
         void IInitializable.Initialize()
         {
             _inputAdapter.OnMove += OnMove;

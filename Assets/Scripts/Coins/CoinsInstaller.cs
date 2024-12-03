@@ -14,7 +14,7 @@ namespace Coins
         {
             Container.Bind<CoinSpawner>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<CoinSystem>().AsSingle().NonLazy();
-            
+
             Container.BindMemoryPool<Coin, MonoMemoryPool<Coin>>()
                 .WithInitialSize(10)
                 .FromComponentInNewPrefab(_coinPrefab)
