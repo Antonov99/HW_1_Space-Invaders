@@ -1,8 +1,10 @@
 using System;
+using JetBrains.Annotations;
 
 namespace Modules
 {
     //Don't modify
+    [UsedImplicitly]
     public sealed class Difficulty : IDifficulty
     {
         public event Action OnStateChanged;

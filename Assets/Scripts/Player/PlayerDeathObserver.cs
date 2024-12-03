@@ -12,11 +12,13 @@ namespace Player
     {
         private readonly ISnake _player;
         private readonly IWorldBounds _worldBounds;
+        private readonly IGameUI _gameUI;
 
-        public PlayerDeathObserver(PlayerService playerService, IWorldBounds worldBounds)
+        public PlayerDeathObserver(PlayerService playerService, IWorldBounds worldBounds, IGameUI gameUI)
         {
             _player = playerService.Player;
             _worldBounds = worldBounds;
+            _gameUI = gameUI;
         }
 
         public void Initialize()
@@ -33,7 +35,7 @@ namespace Player
 
         private void OnDead()
         {
-            Debug.Log("Dead");
+            _gameUI.GameOver(false);
             _player.SetActive(false);
         }
 

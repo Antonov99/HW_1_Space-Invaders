@@ -9,7 +9,7 @@ namespace Modules
     //Don't modify
     public sealed class Coin : SerializedMonoBehaviour, ICoin
     {
-        private const int RandomRangeOffset = 1;
+        private const int _RANDOM_RANGE_OFFSET = 1;
         
         [SerializeField]
         private int _minWeight;
@@ -32,13 +32,13 @@ namespace Modules
         {
             get
             {
-                Vector3 position = this.transform.position;
+                Vector3 position = transform.position;
                 return new Vector2Int((int) position.x, (int) position.y);
             }
             set
             {
                 Vector3 position = new Vector3(value.x, value.y);
-                this.transform.position = position;
+                transform.position = position;
             }
         }
 
@@ -49,7 +49,7 @@ namespace Modules
 
         public void Generate()
         {
-            int weight = Random.Range(_minWeight, _maxWeight + RandomRangeOffset);
+            int weight = Random.Range(_minWeight, _maxWeight + _RANDOM_RANGE_OFFSET);
             _weight = weight;
             _spriteRenderer.color = _colors[weight];
         }
