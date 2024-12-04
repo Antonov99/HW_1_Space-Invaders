@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb34049e1e2c4ce3b5f1a9a7bbc04fcd, type: 3}
+  m_Name: Planet4
+  m_EditorClassIdentifier: 
+  <Name>k__BackingField: Planet #4
+  <PurchasePrice>k__BackingField: 10000
+  <MaxLevel>k__BackingField: 40
+  <IncomeDuration>k__BackingField: 150
+  <PopulationPeriod>k__BackingField: 4
+  _upgradePriceTable:
+    _prices: f4010000e8030000dc050000d0070000c4090000b80b0000ac0d0000a00f000094110000881300007c1500007017000064190000581b00004c1d0000401f000034210000282300001c2500001027000004290000f82a0000ec2c0000e02e0000d4300000c8320000bc340000b0360000a4380000983a00008c3c0000803e000074400000684200005c4400005046000044480000384a00002c4c0000204e0000
+    _multiplier: 500
+  _incomeTable:
+    _startStatValue: 2000
+    _endStatValue: 500000
+    _statValueStep: 12450
+    _statValues: 7238000014690000b699000058ca0000fafa00009c2b01003e5c0100e08c010082bd010024ee0100c61e0200684f02000a800200acb002004ee10200f01103009242030034730300d6a3030078d403001a050400bc3504005e66040000970400a2c7040044f80400e6280500885905002a8a0500ccba05006eeb0500101c0600b24c0600547d0600f6ad060098de06003a0f0700dc3f07007e70070020a10700
+  _lockedIcon: {fileID: 21300000, guid: 652acf7cb97384b84b82866bcd13d695, type: 3}
+  _unlockedIcon: {fileID: 21300000, guid: 0b7abd89460d842828058726c3f10740, type: 3}
