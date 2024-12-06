@@ -14,8 +14,9 @@ namespace Player
         {
             Container.BindInterfacesAndSelfTo<PlayerDeathObserver>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<PlayerWinObserver>().AsSingle().NonLazy();
-            Container.Bind<PlayerService>().AsSingle().WithArguments(_snake);
+            Container.Bind<ISnake>().FromInstance(_snake).AsSingle();
             Container.BindInterfacesAndSelfTo<PlayerMoveController>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<PlayerSpeedController>().AsSingle().NonLazy();
         }
     }
 }

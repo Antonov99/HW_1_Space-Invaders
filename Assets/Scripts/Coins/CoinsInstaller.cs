@@ -13,7 +13,10 @@ namespace Coins
         public override void InstallBindings()
         {
             Container.Bind<CoinSpawner>().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<CoinSystem>().AsSingle().NonLazy();
+            Container.Bind<CoinSystem>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<CoinSpawnController>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<CoinCollectController>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<CoinCollector>().AsSingle().NonLazy();
 
             Container.BindMemoryPool<Coin, MonoMemoryPool<Coin>>()
                 .WithInitialSize(10)

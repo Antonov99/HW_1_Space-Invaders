@@ -1,19 +1,18 @@
 ﻿using System;
-using Coins;
 using JetBrains.Annotations;
 using Modules;
 using UnityEngine;
 using Zenject;
 
-namespace DifficultySystem
+namespace Coins
 {
     [UsedImplicitly]
-    public class DifficultyController : IInitializable, IDisposable
+    public class CoinSpawnController:IInitializable,IDisposable
     {
         private readonly CoinSystem _coinSystem;
         private readonly IDifficulty _difficulty;
 
-        public DifficultyController(CoinSystem coinSystem, IDifficulty difficulty, ISnake player)
+        public CoinSpawnController(CoinSystem coinSystem, IDifficulty difficulty)
         {
             _coinSystem = coinSystem;
             _difficulty = difficulty;
@@ -21,18 +20,18 @@ namespace DifficultySystem
 
         void IInitializable.Initialize()
         {
-            _coinSystem.OnAllCoinsCollected += AddDifficulty;
-            AddDifficulty();
+            _difficulty.OnStateChanged += OnSpawn;
         }
 
-        private void AddDifficulty()
+        private void OnSpawn()
         {
-            _difficulty.Next(out int difficulty);
+            _coinSystem.SpawnCoins(_difficulty.Current);
+            Debug.Log(_difficulty.Current);
         }
 
         void IDisposable.Dispose()
         {
-            _coinSystem.OnAllCoinsCollected -= AddDifficulty;
+            _difficulty.OnStateChanged -= OnSpawn;
         }
     }
 }

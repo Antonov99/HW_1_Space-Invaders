@@ -12,25 +12,20 @@ namespace Player
         private readonly ISnake _player;
         private readonly InputAdapter _inputAdapter;
 
-        public PlayerMoveController(PlayerService playerService, InputAdapter inputAdapter)
+        public PlayerMoveController(ISnake playerService, InputAdapter inputAdapter)
         {
-            _player = playerService.Player;
+            _player = playerService;
             _inputAdapter = inputAdapter;
         }
 
         void IInitializable.Initialize()
         {
-            _inputAdapter.OnMove += OnMove;
-        }
-
-        private void OnMove(SnakeDirection direction)
-        {
-            _player.Turn(direction);
+            _inputAdapter.OnMove +=  _player.Turn;
         }
 
         void IDisposable.Dispose()
         {
-            _inputAdapter.OnMove -= OnMove;
+            _inputAdapter.OnMove -=  _player.Turn;
         }
     }
 }

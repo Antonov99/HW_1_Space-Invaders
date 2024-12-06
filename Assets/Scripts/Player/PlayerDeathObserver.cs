@@ -14,14 +14,14 @@ namespace Player
         private readonly IWorldBounds _worldBounds;
         private readonly IGameUI _gameUI;
 
-        public PlayerDeathObserver(PlayerService playerService, IWorldBounds worldBounds, IGameUI gameUI)
+        public PlayerDeathObserver(ISnake playerService, IWorldBounds worldBounds, IGameUI gameUI)
         {
-            _player = playerService.Player;
+            _player = playerService;
             _worldBounds = worldBounds;
             _gameUI = gameUI;
         }
 
-        public void Initialize()
+        void IInitializable.Initialize()
         {
             _player.OnSelfCollided += OnDead;
             _player.OnMoved += CheckCollision;
@@ -39,7 +39,7 @@ namespace Player
             _player.SetActive(false);
         }
 
-        public void Dispose()
+        void IDisposable.Dispose()
         {
             _player.OnSelfCollided -= OnDead;
             _player.OnMoved -= CheckCollision;
