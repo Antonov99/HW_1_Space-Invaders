@@ -1,8 +1,10 @@
-﻿using Modules.Money;
+﻿using JetBrains.Annotations;
+using Modules.Money;
 using Zenject;
 
 namespace Game.Gameplay
 {
+    [UsedImplicitly]
     public sealed class MoneyInstaller : Installer<int, MoneyInstaller>
     {
         [Inject]

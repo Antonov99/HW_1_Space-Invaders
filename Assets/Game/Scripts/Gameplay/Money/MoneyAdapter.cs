@@ -1,8 +1,10 @@
+using JetBrains.Annotations;
 using Modules.Money;
 using Modules.Planets;
 
 namespace Game.Gameplay
 {
+    [UsedImplicitly]
     public sealed class MoneyAdapter : IMoneyAdapter
     {
         private readonly IMoneyStorage _moneyStorage;
