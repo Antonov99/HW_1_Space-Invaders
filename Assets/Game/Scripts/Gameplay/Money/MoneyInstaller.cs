@@ -12,13 +12,13 @@ namespace Game.Gameplay
         
         public override void InstallBindings()
         {
-            this.Container
+            Container
                 .BindInterfacesAndSelfTo<MoneyStorage>()
                 .AsSingle()
                 .WithArguments(_initialMoney)
                 .NonLazy();
 
-            this.Container
+            Container
                 .BindInterfacesTo<MoneyAdapter>()
                 .AsSingle()
                 .NonLazy();

@@ -14,7 +14,7 @@ namespace Game.Gameplay
         {
             foreach (PlanetConfig config in _catalog)
             {
-                this.Container
+                Container
                     .BindInterfacesAndSelfTo<Planet>()
                     .AsCached()
                     .WithArguments(config)
