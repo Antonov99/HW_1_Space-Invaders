@@ -1,7 +1,9 @@
-﻿using Modules.Planets;
+﻿using JetBrains.Annotations;
+using Modules.Planets;
 
 namespace Game.UI.Planets
 {
+    [UsedImplicitly]
     public sealed class PlanetPopupShower
     {
         private readonly PlanetPopupPresenter _planetPresenter;

@@ -1,21 +1,35 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Game.UI.Planets;
+using JetBrains.Annotations;
 using Modules.Planets;
 using Zenject;
 
 namespace Game.UI.PlanetsCatalog
 {
-    public class CatalogPresenter:IInitializable
+    [UsedImplicitly]
+    public class CatalogPresenter : IInitializable
     {
-        private IEnumerable<Planet> _planets;
+        private readonly List<Planet> _planets;
+        private readonly PlanetPresenter.Factory _factory;
+        private readonly PlanetView[] _planetViews;
 
-        public CatalogPresenter(IEnumerable<Planet> planets)
+        private readonly Dictionary<Planet, PlanetPresenter> _presenters = new();
+
+        public CatalogPresenter(IEnumerable<Planet> planets, PlanetPresenter.Factory factory, PlanetView[] planetViews)
         {
-            _planets = planets;
+            _planets = planets.ToList();
+            _factory = factory;
+            _planetViews = planetViews;
         }
 
         public void Initialize()
         {
-            
+            for (int i = 0; i < _planets.Count(); i++)
+            {
+                var planetPresenter = _factory.Create(_planets[i], _planetViews[i]);
+                _presenters.Add(_planets[i], planetPresenter);
+            }
         }
     }
 }

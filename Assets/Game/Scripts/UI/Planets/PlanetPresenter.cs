@@ -19,7 +19,8 @@ namespace Game.UI.Planets
 
         public void Initialize()
         {
-            _planetView.OnClicked += OnClick;
+            _planetView.OnClick += OnClick;
+            _planetView.OnHold += OnHold;
             _planet.OnUnlocked += OnUnlock;
             _planet.OnIncomeReady += OnReady;
             _planet.OnIncomeTimeChanged += OnTimeChanged;
@@ -29,7 +30,11 @@ namespace Game.UI.Planets
         {
             if (!_planet.IsUnlocked) _planet.Unlock();
             else if (_planet.IsIncomeReady) _planet.GatherIncome();
-            else _planetPopupShower.Show(_planet);
+        }
+
+        private void OnHold()
+        {
+            _planetPopupShower.Show(_planet);
         }
 
         private void OnUnlock()
@@ -50,10 +55,15 @@ namespace Game.UI.Planets
 
         public void Dispose()
         {
-            _planetView.OnClicked -= OnClick;
+            _planetView.OnClick -= OnClick;
+            _planetView.OnHold -= OnHold;
             _planet.OnUnlocked -= OnUnlock;
             _planet.OnIncomeReady -= OnReady;
             _planet.OnIncomeTimeChanged -= OnTimeChanged;
+        }
+
+        public sealed class Factory : PlaceholderFactory<Planet, PlanetView, PlanetPresenter>
+        {
         }
     }
 }

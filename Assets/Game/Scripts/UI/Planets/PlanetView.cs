@@ -1,17 +1,15 @@
-﻿using TMPro;
+﻿using System;
+using Modules.UI;
+using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Game.UI.Planets
 {
     public class PlanetView:MonoBehaviour
     {
-        public event UnityAction OnClicked
-        {
-            add => _button.onClick.AddListener(value);
-            remove => _button.onClick.RemoveListener(value);
-        }
+        public event Action OnClick;
+        public event Action OnHold;
             
         [SerializeField]
         private GameObject _lock;
@@ -23,11 +21,23 @@ namespace Game.UI.Planets
         private Image _icon;
 
         [SerializeField]
-        private TextMeshPro _time;
+        private TMP_Text _time;
 
         [SerializeField]
-        private Button _button;
-        
+        private SmartButton _button;
+
+        private void OnEnable()
+        {
+            _button.OnClick += OnClick;
+            _button.OnHold += OnHold;
+        }
+
+        private void OnDisable()
+        {
+            _button.OnClick -=  OnClick;
+            _button.OnHold -= OnHold;
+        }
+
         public void Unlock(bool value)
         {
             _lock.SetActive(!value);

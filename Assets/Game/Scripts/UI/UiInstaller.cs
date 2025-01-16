@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using Game.UI.Planets;
+using JetBrains.Annotations;
 using UnityEngine;
 using Zenject;
 
@@ -8,12 +9,19 @@ namespace Game.UI
     public class UiInstaller:MonoInstaller
     {
         [SerializeField]
+        private PlanetView[] _planetViews;
+        
+        [SerializeField]
         private MoneyView _moneyView;
+
+        [SerializeField]
+        private PlanetPopup _popup;
         
         public override void InstallBindings()
         {
-            Container.Bind<IMoneyView>().To<MoneyView>().FromInstance(_moneyView);
-            Container.BindInterfacesAndSelfTo<MoneyPresenter>().AsSingle().NonLazy();
+            PlanetInstaller.Install(Container, _planetViews);
+            MoneyInstaller.Install(Container,_moneyView);
+            PlanetPopupInstaller.Install(Container,_popup);
         }
     }
 }

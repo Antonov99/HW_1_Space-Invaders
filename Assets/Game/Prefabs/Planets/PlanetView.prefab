@@ -497,6 +497,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _lock: {fileID: 7085741634984397813}
   _coin: {fileID: 320550912344372757}
+  _icon: {fileID: 0}
+  _time: {fileID: 8019802931863089282}
+  _button: {fileID: 5583372068559771244}
 --- !u!1 &5564512366540979095
 GameObject:
   m_ObjectHideFlags: 0
