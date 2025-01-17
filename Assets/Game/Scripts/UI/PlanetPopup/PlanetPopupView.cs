@@ -1,11 +1,12 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Zenject;
 
 namespace Game.UI.Planets
 {
-    public class PlanetPopup:MonoBehaviour
+    public class PlanetPopupView:MonoBehaviour
     {
         [SerializeField]
         private TMP_Text _name;
@@ -22,8 +23,9 @@ namespace Game.UI.Planets
         [SerializeField]
         private Image _icon;
 
+        [FormerlySerializedAs("_close")]
         [SerializeField]
-        private Button _close;
+        private Button _closeButton;
 
         [SerializeField]
         private TMP_Text _price;
@@ -42,7 +44,7 @@ namespace Game.UI.Planets
         public void Show()
         {
             _upgradeButton.onClick.AddListener(_presenter.Upgrade);
-            _close.onClick.AddListener(Hide);
+            _closeButton.onClick.AddListener(Hide);
             _presenter.OnStateChanged += OnStateChanged;
             OnStateChanged();
             gameObject.SetActive(true);
@@ -51,7 +53,7 @@ namespace Game.UI.Planets
         public void Hide()
         {
             _upgradeButton.onClick.RemoveListener(_presenter.Upgrade);
-            _close.onClick.RemoveListener(Hide);
+            _closeButton.onClick.RemoveListener(Hide);
             _presenter.OnStateChanged -= OnStateChanged;
             gameObject.SetActive(false);
         }

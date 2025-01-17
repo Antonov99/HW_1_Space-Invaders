@@ -42,7 +42,7 @@ namespace Game.UI.Planets
 
         public void Upgrade()
         {
-            
+            _planet.Upgrade();
         }
     }
 }

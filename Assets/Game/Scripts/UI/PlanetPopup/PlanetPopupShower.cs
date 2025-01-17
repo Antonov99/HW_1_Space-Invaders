@@ -7,18 +7,18 @@ namespace Game.UI.Planets
     public sealed class PlanetPopupShower
     {
         private readonly PlanetPopupPresenter _planetPresenter;
-        private readonly PlanetPopup _planetPopup;
+        private readonly PlanetPopupView _planetPopupView;
 
-        public PlanetPopupShower(PlanetPopupPresenter planetPresenter, PlanetPopup planetPopup)
+        public PlanetPopupShower(PlanetPopupPresenter planetPresenter, PlanetPopupView planetPopupView)
         {
             _planetPresenter = planetPresenter;
-            _planetPopup = planetPopup;
+            _planetPopupView = planetPopupView;
         }
 
         public void Show(IPlanet planet)
         {
             _planetPresenter.ChangePlanet(planet);
-            _planetPopup.Show();
+            _planetPopupView.Show();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Game.UI.Planets;
 using JetBrains.Annotations;
@@ -8,7 +9,7 @@ using Zenject;
 namespace Game.UI.PlanetsCatalog
 {
     [UsedImplicitly]
-    public class CatalogPresenter : IInitializable
+    public class CatalogPresenter : IInitializable, IDisposable
     {
         private readonly List<Planet> _planets;
         private readonly PlanetPresenter.Factory _factory;
@@ -28,7 +29,16 @@ namespace Game.UI.PlanetsCatalog
             for (int i = 0; i < _planets.Count(); i++)
             {
                 var planetPresenter = _factory.Create(_planets[i], _planetViews[i]);
+                planetPresenter.Initialize();
                 _presenters.Add(_planets[i], planetPresenter);
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (var presenter in _presenters)
+            {
+                presenter.Value.Dispose();
             }
         }
     }

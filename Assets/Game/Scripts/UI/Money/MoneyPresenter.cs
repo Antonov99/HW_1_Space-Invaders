@@ -20,6 +20,7 @@ namespace Game.UI
         public void Initialize()
         {
             _moneyStorage.OnMoneyChanged += Update;
+            Update(_moneyStorage.Money, 0);
         }
 
         private void Update(int newValue, int previousValue)

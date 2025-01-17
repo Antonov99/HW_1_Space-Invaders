@@ -4,16 +4,16 @@ using Zenject;
 namespace Game.UI.Planets
 {
     [UsedImplicitly]
-    public sealed class PlanetPopupInstaller : Installer<PlanetPopup, PlanetPopupInstaller>
+    public sealed class PlanetPopupInstaller : Installer<PlanetPopupView, PlanetPopupInstaller>
     {
         [Inject]
-        private PlanetPopup _popup;
+        private PlanetPopupView _popupView;
         
         public override void InstallBindings()
         {
             this.Container
-                .Bind<PlanetPopup>()
-                .FromInstance(_popup)
+                .Bind<PlanetPopupView>()
+                .FromInstance(_popupView)
                 .AsSingle()
                 .NonLazy();
 

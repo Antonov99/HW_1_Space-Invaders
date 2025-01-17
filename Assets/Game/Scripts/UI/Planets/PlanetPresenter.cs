@@ -1,9 +1,12 @@
 ﻿using System;
+using JetBrains.Annotations;
 using Modules.Planets;
+using UnityEngine;
 using Zenject;
 
 namespace Game.UI.Planets
 {
+    [UsedImplicitly]
     public class PlanetPresenter : IInitializable, IDisposable
     {
         private readonly IPlanet _planet;
@@ -24,6 +27,16 @@ namespace Game.UI.Planets
             _planet.OnUnlocked += OnUnlock;
             _planet.OnIncomeReady += OnReady;
             _planet.OnIncomeTimeChanged += OnTimeChanged;
+
+            Setup();
+        }
+
+        private void Setup()
+        {
+            _planetView.SetIcon(_planet.GetIcon(_planet.IsUnlocked));
+            _planetView.ShowCoin(_planet.IsIncomeReady);
+            _planetView.Unlock(_planet.IsUnlocked);
+            _planetView.UpdatePrice(_planet.Price.ToString());
         }
 
         private void OnClick()
